@@ -1,31 +1,21 @@
 
-import { Controller, Get, Post, Req, Header, Param, Body, Query } from '@nestjs/common';
-import { CreateCatDto } from './create-cat.dto';
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
+  constructor(private catsService: CatsService) {}
+
   @Get()
-  // findAll(@Req() request: Request): string {
-  //   return 'This action returns all cats and dogs';
-  // }
-  async findAll(@Query('age') age: number, @Query('breed') breed: string) {
-    return `This action returns all cats filtered by age: ${age} and breed: ${breed}`;
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll();
   }
 
   @Post()
-  @Header('Cache-Control', 'no-store')
   async create(@Body() createCatDto: CreateCatDto) {
-    console.log(createCatDto);
-    return 'Cat created';
+    this.catsService.create(createCatDto);
   }
 
-  @Get('abcd/*')
-  findAbcd() {
-    return 'This route uses a wildcard';
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string): string {
-    return `This action returns a #${id} cat`;
-  }
 }
